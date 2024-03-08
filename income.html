@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Income</title>
+    <style>
+      .error {
+        color: red;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Add Income</h1>
+    <form id="IncomeForm" name="Income" type="get">
+      <div>
+        <label for="source">Income Source Name:</label>
+        <input id="source" type="text" />
+        <span id="sourceError" class="error"></span>
+      </div>
+      <div>
+        <label for="amount">Amount</label>
+        <input id="amount" type="text" />
+        <span id="amountError" class="error"></span>
+      </div>
+      <div>
+        <select id="Freq">
+          <option>Monthly</option>
+          <option>One-Time</option>
+          <option>Bi-Weekly</option>
+          <option>Yearly</option>
+        </select>
+      </div>
+      <input type="submit" value="Submit" id="submit" />
+    </form>
+
+    <script>
+      document
+        .getElementById("IncomeForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+          checks();
+        });
+
+      function checks() {
+        let isValid = false;
+        const name = document.getElementById("source").value;
+        if (name.length < 3) {
+          console.log("This far");
+          document.getElementById("sourceError").textContent =
+            "Please enter a valid email address";
+        }
+        else{
+            isValid = true;
+        }
+
+        const amount = document.getElementById("amount").value;
+        number(amount);
+        if (amount === "" || amount === "0") {
+            document.getElementById("amountError").textContent = "Please enter an amount.";
+        } else {
+            document.getElementById("amount").value = amount.toFixed(2);
+        }
+
+        if (isValid) {
+          submitForm();
+        }
+      }
+
+      function submitForm(){
+        let url = "https://macpro.csis410.com/submit";
+
+        let params = new FormData();
+        params.append("Name", document.getElementById("source").value);
+        params.append("Amount", document.getElementById("amount").value);
+        params.append("Frequency", document.getElementById("Freq").value);
+
+        fetch(url, {method: "post", body: params}) 
+            .then(statusCheck)
+          .then(response => response.text())
+          .then((data) => updateResults(data)) 
+          .catch(handleError);
+
+
+      }
+
+      function updateResults(data) {
+        console.log(data)
+      }
+
+      function handleError(error) {
+        
+        console.error(error);
+      }
+
+      async function statusCheck(res) {
+        if (!res.ok) {
+          throw new Error(await res.text());
+        }
+        return res;
+      }
+    </script>
+  </body>
+</html>

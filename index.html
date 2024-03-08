@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      .error {
+        color: red;
+      }
+      .formCont {
+        display: flex;
+        flex-direction: column;
+      }
+    </style>
+  </head>
+  <body>
+    <form id="emailForm" name="emailAddress" type="get">
+      <div class="formCont">
+        <label for="email">Only Siena Email address:</label>
+        <input id="email" type="textfield" />
+        <span id="emailError" class="error"> </span>
+        <input type="submit" value="Submit" id="submit" />
+      </div>
+    </form>
+
+    <script>
+      function validateEmail() {
+        let isValid = false;
+        const emailAddress = document.getElementById("email").value; // Get the emailAddress's input value
+        //set the textContent of emailError as empty string.
+
+        if (emailAddress === "" || !emailAddress.endsWith("@siena.edu")) {
+          //set the content in emailError to "Please enter a valid email address";
+          console.log("This far");
+          document.getElementById("emailError").textContent =
+            "Please enter a valid email address";
+        } else {
+          isValid = true;
+          console.log("Email is valid: ", emailAddress);
+        }
+
+        if (isValid) {
+          submitForm();
+        }
+      }
+
+      document.getElementById("emailForm").addEventListener("submit", function (e) {
+          e.preventDefault();
+          validateEmail();
+        });
+
+      function submitForm() {
+        let url = "https://macpro.csis410.com/submit";
+
+        let params = new FormData();
+        params.append("email-Address", document.getElementById("email").value);
+
+        fetch(url, { method: "POST", body: params })
+          .then(statusCheck)
+          .then(response => response.text())
+          .then((data) => updateResults(data)) // Handle the data from the response
+          .catch(handleError); // Handle any errors that occur
+      }
+
+      function updateResults(data) {
+        console.log(data)
+      }
+
+      function handleError(error) {
+        // Handle any errors that occur during the fetch
+        console.error(error);
+      }
+
+      async function statusCheck(res) {
+        if (!res.ok) {
+          throw new Error(await res.text());
+        }
+        return res;
+      }
+    </script>
+  </body>
+</html>
